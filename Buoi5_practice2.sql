@@ -17,7 +17,13 @@ where skill in ('Python','Tableau','PostgreSQL')
 GROUP BY candidate_id
 HAVING count(skill) >=3
 ORDER BY candidate_id
----Bai tap 6 --- skip buoi sau
+---Bai tap 6 ---
+ SELECT user_id, 
+max(date(post_date))-min(date(post_date)) as days
+FROM posts
+where post_date >='01-01-2021'and post_date <'01-01-2022'
+group by user_id
+having count(post_id)>=2
 ---Bai tap 7---
 SELECT card_name,
 max(issued_amount)-min(issued_amount) as difference
