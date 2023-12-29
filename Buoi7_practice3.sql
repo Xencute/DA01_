@@ -30,3 +30,31 @@ group by(sender_id)
 ORDER BY count(message_id) desc
 limit 2
 ---Bai tap 6---
+select tweet_id
+from tweets
+where length(content)>15
+---Bai tap7---
+select 
+activity_date as day,
+count (distinct user_id) as active_users
+from activity
+group by activity_date
+having activity_date BETWEEN '2019-06-27'AND '2019-07-27'
+
+---Baitap8---
+select 
+count(id) as employee_number
+from employees
+where joining_date between '2022-01-01' and '2022-07-31'
+
+---Baitap9---
+select 
+position('a'in first_name)
+from worker
+where first_name='Amitah'
+
+---Baitap10---
+select 
+substring(title from position('2' in title) for 4)
+from winemag_p2
+where country='Macedonia'
