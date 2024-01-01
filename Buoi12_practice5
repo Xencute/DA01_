@@ -1,1 +1,11 @@
-
+---Baitap1----
+select a.continent, round(avg(b.population),0) from country as a
+left join city as b on a.code=b.countrycode
+where b.population is not null
+group by a.continent
+---Baitap2---
+select 
+count(b.signup_action)/COUNT(a.email_id)
+from emails as a left join texts as b 
+on a.user_id=b.user_id
+where b.signup_action ='Confirmed'
