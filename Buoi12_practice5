@@ -5,7 +5,22 @@ where b.population is not null
 group by a.continent
 ---Baitap2---
 select 
-count(b.signup_action)/COUNT(a.email_id)
-from emails as a left join texts as b 
+ROUND(
+CAST(count(b.email_id)as decimal)/COUNT(a.email_id),2)
+FROM
+emails as a left join texts as b on a.email_id=b.email_id and b.signup_action='Confirmed'
+---Baitap3---
+SELECT 
+b.age_bucket,
+ROUND(SUM(case when a.activity_type='open'then time_spent 
+else 0 end)*100.00/SUM(case when a.activity_type='open'then time_spent 
+else 0 end+case when a.activity_type='send'then time_spent 
+else 0 end),2) as open_rate,
+ROUND(sum(case when a.activity_type='send'then time_spent 
+else 0 end)*100.00/SUM(case when a.activity_type='open'then time_spent 
+else 0 end+case when a.activity_type='send'then time_spent 
+else 0 end),2) as send_rate
+ FROM activities as a join age_breakdown as b
 on a.user_id=b.user_id
-where b.signup_action ='Confirmed'
+where activity_type in ('open','send')
+GROUP BY b.age_bucket
