@@ -39,3 +39,26 @@ having COUNT( DISTINCT EXTRACT(month from event_date))  >1)
 select 7 as month, count (*) from active_user
 
 ---Baitap6----
+with a as
+(select to_char(trans_date,'yyyy-mm') as month, country, count(id)as trans_count from transactions
+group by to_char(trans_date,'yyyy-mm'), country),
+
+b as (select to_char(trans_date,'yyyy-mm')as month, country, sum(amount)as trans_total_amount from transactions
+group by to_char(trans_date,'yyyy-mm'), country),
+
+c as 
+(select to_char(trans_date,'yyyy-mm') as month, country, count(*)as approved_count from transactions
+where state='approved'
+group by to_char(trans_date,'yyyy-mm'), country),
+
+d as 
+(select to_char(trans_date,'yyyy-mm')as month, country, sum(amount) as approved_total_amount from transactions
+where state='approved'
+group by to_char(trans_date,'yyyy-mm'), country)
+
+
+select a.month, a.country,a.trans_count, c.approved_count, b.trans_total_amount,d.approved_total_amount from a join b on (a.month=b.month and a.country=b.country)
+join c on a.month=c.month and a.country=c.country
+join d on a.month=d.month and a.country=d.country
+
+---Baitap7---
