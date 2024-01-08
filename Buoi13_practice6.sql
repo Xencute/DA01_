@@ -62,3 +62,10 @@ join c on a.month=c.month and a.country=c.country
 join d on a.month=d.month and a.country=d.country
 
 ---Baitap7---
+with b as 
+(select product_id,min(year) as first_year from sales
+group by product_id)
+
+select a.product_id,b.first_year,a.quantity,a.price from sales a join (select product_id,min(year) as first_year from sales
+group by product_id) as b
+on a.product_id=b.product_id and a.year=b.first_year
