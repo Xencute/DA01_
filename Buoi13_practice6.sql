@@ -9,6 +9,7 @@ select COUNT(*) from duplicate_listing
 
 
 ---Baitap2---
+  chưa học rank, row
 
 ---Baitap3---
 with member_over3calls as
@@ -105,3 +106,12 @@ order by b.avg desc, a.title asc
 limit 1)
 
 ---Baitap12---
+with a as (select count(requester_id) as tongchap_nhan,accepter_id as id from requestaccepted
+group by accepter_id),
+
+b as (select requester_id as id, count(accepter_id) as tongloi_gui from requestaccepted
+group by requester_id)
+
+select a.id, coalesce(a.tongchap_nhan,0)+ coalesce(b.tongloi_gui,0) as num from a full join b on a.id=b.id
+order by coalesce(a.tongchap_nhan,0)+ coalesce(b.tongloi_gui,0) desc
+limit 1
