@@ -78,3 +78,30 @@ group by customer_id
 having count(distinct product_key) = (select count(*) from product)
 
 ---Baitap9---
+Select a.employee_id from employees a right join (select employee_id, manager_id from employees
+where salary<30000 and manager_id is not null) b
+on a.employee_id=b.manager_id
+where a.employee_id is not null
+order by employee_id
+
+---Baitap10 - sailink ??? --- 
+Select a.employee_id from employees a right join (select employee_id, manager_id from employees
+where salary<30000 and manager_id is not null) b
+on a.employee_id=b.manager_id
+where a.employee_id is not null
+order by employee_id
+
+---Baitap11---
+select * from (select c.name as results from users c join (select user_id,count(distinct movie_id) as count from movierating
+group by user_id) d
+on c.user_id = d.user_id
+order by d.count desc, c.name
+limit 1) UNION 
+(select a.title from movies a join (select movie_id,avg(rating) as avg from movierating
+where extract(year from created_at)=2020 and extract(month from created_at)=02
+group by movie_id) b 
+on a.movie_id=b.movie_id
+order by b.avg desc, a.title asc
+limit 1)
+
+---Baitap12---
