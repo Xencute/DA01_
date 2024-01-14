@@ -71,3 +71,14 @@ group by category, product)
 
 select *, row_number() over (partition by category order by total_spend desc) from a) as b
 where row_number in(1,2)
+
+
+---BAITAP8---
+SELECT * FROM (with X as (SELECT DISTINCT b.artist_id,c.artist_name, count(*) over (PARTITION BY b.artist_id ) as total
+FROM global_song_rank A LEFT JOIN SONGS B 
+ON a.song_id=b.song_id
+left join artists c on b.artist_id=c.artist_id
+where a.rank<=10 and b.song_id is not null)
+select artist_name,dense_rank() over(order by total desc)as artist_rank
+from x)AS Z
+WHERE ARTIST_RANK BETWEEN 1 AND 5 
