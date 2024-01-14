@@ -18,3 +18,8 @@ FROM monthly_cards_issued)
 select card_name,issued_amount from a 
 where rank=1
 order by issued_amount desc
+
+---BAITAP3---
+SELECT USER_ID, SPEND, TRANSACTION_DATE FROM 
+(SELECT *, RANK() OVER (PARTITION BY USER_ID ORDER BY TRANSACTION_DATE ASC) FROM transactions) AS A
+WHERE RANK =3
