@@ -64,3 +64,10 @@ FROM transactions)
 select COUNT(*) from a
 where extract(hour from interval) <1 and extract(minute from interval)<=10
 
+---BAITAP7---
+select category, product, total_spend from (with a as (select category, product, sum(spend) as total_spend  from product_spend
+where extract(year from transaction_date)=2022
+group by category, product)
+
+select *, row_number() over (partition by category order by total_spend desc) from a) as b
+where row_number in(1,2)
