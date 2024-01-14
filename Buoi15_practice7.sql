@@ -51,3 +51,16 @@ select user_id, tweet_date, ROUND(avg(tweet_count) over (partition by user_id or
 rows BETWEEN 2 preceding and current row),2) as rolling_avg
 from tweets
 
+
+---BAITAP6---
+with a as (SELECT *, lead(transaction_timestamp) over (PARTITION BY merchant_id, credit_card_id
+, amount ORDER BY transaction_timestamp asc) as nexttransaction_timestamp,
+
+
+lead(transaction_timestamp) over (PARTITION BY merchant_id, credit_card_id
+, amount ORDER BY transaction_timestamp asc) - transaction_timestamp as interval 
+FROM transactions)
+
+select COUNT(*) from a
+where extract(hour from interval) <1 and extract(minute from interval)<=10
+
