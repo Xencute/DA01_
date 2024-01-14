@@ -23,3 +23,31 @@ order by issued_amount desc
 SELECT USER_ID, SPEND, TRANSACTION_DATE FROM 
 (SELECT *, RANK() OVER (PARTITION BY USER_ID ORDER BY TRANSACTION_DATE ASC) FROM transactions) AS A
 WHERE RANK =3
+
+---BAITAP4---
+SELECT DISTINCT TRANSACTION_DATE,USER_ID, COUNT(*) OVER (PARTITION BY USER_ID ORDER BY TRANSACTION_DATE ASC)
+AS purchase_count
+
+FROM (
+SELECT *, RANK() OVER (PARTITION BY USER_ID ORDER BY TRANSACTION_DATE DESC) FROM user_transactions) AS A
+WHERE RANK=1
+
+---BAITAP5---
+SELECT USER_ID,TWEET_DATE,
+
+case 
+when sec_pre is null and  pre is null then ROUND(cast(tweet_count as decimal),2)
+when sec_pre is null and pre is not null then  ROUND(CAST((tweet_count+pre)AS DECIMAL)/2,2) 
+else ROUND(CAST((tweet_count+pre+sec_pre)AS DECIMAL)/3,2) 
+end AS rolling_avg_3d
+
+FROM  (SELECT *, LAG(TWEET_COUNT) OVER (PARTITION BY USER_ID ORDER BY TWEET_DATE) AS PRE, 
+
+LAG(TWEET_COUNT,2) OVER (PARTITION BY USER_ID ORDER BY TWEET_DATE) AS SEC_PRE
+FROM tweets) AS A 
+
+hoặc cách dưới
+select user_id, tweet_date, ROUND(avg(tweet_count) over (partition by user_id order by tweet_date
+rows BETWEEN 2 preceding and current row),2) as rolling_avg
+from tweets
+
