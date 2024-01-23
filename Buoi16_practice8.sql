@@ -61,7 +61,11 @@ concat (lat,lon)) over (partition by concat (lat,lon)) as count_2
  select round(
      cast(sum(tiv_2016)as decimal),2) as tiv_2016 from cte
  where count !=1 and count_2=1
+---Baitap6---
+    with a as (select *, dense_rank()over (partition by departmentid order by salary desc)as rank from employee) 
 
+select a.name as employee, a.salary, b.name as department from a left join department b on a.departmentid=b.id
+where rank in(1,2,3)
 ---Baitap7---
 with cte as (select *, sum(weight) over (order by turn) from queue
 order by turn),
@@ -73,3 +77,20 @@ where sum <=1000)
 select person_name from b where row_number=1
 
 ---Baitap8---
+with cte as
+
+(select max(change_date), product_id from products
+where change_date <='2019-08-16'
+group by product_id),
+
+b as 
+(select product_id, new_price as price from products 
+where (change_date, product_id) in (select max(change_date), product_id from products
+where change_date <='2019-08-16'
+group by product_id)),
+
+c as
+(select product_id, 10 as price from products
+where change_date >'2019-08-16' and product_id not in (select product_id from cte))
+
+select * from c union select * from b
