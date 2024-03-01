@@ -20,4 +20,23 @@ ADD COLUMN CONTACTFIRSTNAME VARCHAR
 UPDATE public.sales_dataset_rfm_prj
 SET CONTACTLASTNAME=LEFT(contactfullname, POSITION('-' in contactfullname)-1) ,
 CONTACTFIRSTNAME= RIGHT(contactfullname, length(contactfullname)-POSITION('-' in contactfullname))	
----Chuẩn hóa CONTACTLASTNAME, CONTACTFIRSTNAME theo định dạng chữ cái đầu tiên viết hoa, chữ cái tiếp theo viết thường. --
+  
+---Chuẩn hóa CONTACTLASTNAME, CONTACTFIRSTNAME theo định dạng chữ cái đầu tiên viết hoa, chữ cái tiếp theo viết thường---
+UPDATE public.sales_dataset_rfm_prj
+SET contactfirstname=upper(left(contactfirstname,1))||lower(right(contactfirstname, length(contactfirstname)-1)),
+contactlastname=upper(left(contactlastname,1))||lower(right(contactlastname, length(contactlastname)-1))
+
+4/ --- Thêm cột QTR_ID, MONTH_ID, YEAR_ID lần lượt là Qúy, tháng, năm được lấy ra từ ORDERDATE --- 
+ALTER TABLE public.sales_dataset_rfm_prj
+ADD COLUMN QTR_ID NUMERIC,
+ADD COLUMN MONTH_ID NUMERIC ,
+ADD COLUMN YEAR_ID NUMERIC 
+
+SELECT * FROM public.sales_dataset_rfm_prj
+select ORDERDATE,
+EXTRACT (MONTH FROM ORDERDATE), EXTRACT (YEAR FROM ORDERDATE), 
+EXTRACT(DAY FROM ORDERDATE)
+from public.sales_dataset_rfm_prj
+
+UPDATE public.sales_dataset_rfm_prj
+SET qtr_id=
