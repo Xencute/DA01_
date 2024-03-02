@@ -32,11 +32,12 @@ ADD COLUMN QTR_ID NUMERIC,
 ADD COLUMN MONTH_ID NUMERIC ,
 ADD COLUMN YEAR_ID NUMERIC 
 
-SELECT * FROM public.sales_dataset_rfm_prj
-select ORDERDATE,
-EXTRACT (MONTH FROM ORDERDATE), EXTRACT (YEAR FROM ORDERDATE), 
-EXTRACT(DAY FROM ORDERDATE)
-from public.sales_dataset_rfm_prj
-
 UPDATE public.sales_dataset_rfm_prj
-SET qtr_id=
+SET QTR_ID=EXTRACT(quarter FROM ORDERDATE),
+MONTH_ID=EXTRACT (MONTH FROM ORDERDATE),
+YEAR_ID=EXTRACT (YEAR FROM ORDERDATE)
+
+5/---Hãy tìm outlier (nếu có) cho cột QUANTITYORDERED và hãy chọn cách xử lý cho bản ghi đó (2 cách) ( Không chạy câu lệnh trước khi bài được review)---
+
+
+
