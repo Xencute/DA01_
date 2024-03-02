@@ -48,8 +48,9 @@ percentile_cont(0.75) within group (order by (extract (epoch from orderdate))) +
 from public.sales_dataset_rfm_prj
 
 Select * from public.sales_dataset_rfm_prj
-where extract(epoch from orderdate)<(select percentile_cont(0.25) within group (order by (extract (epoch from orderdate)))-1.5*(percentile_cont(0.75) within group (order by (extract (epoch from orderdate)))-percentile_cont(0.25) within group (order by (extract (epoch from orderdate)))) from public.sales_dataset_rfm_prj
-) or extract(epoch from orderdate) >(select percentile_cont(0.75) within group (order by (extract (epoch from orderdate))) +1.5*(percentile_cont(0.75) within group (order by (extract (epoch from orderdate)))-percentile_cont(0.25) within group (order by (extract (epoch from orderdate))))from public.sales_dataset_rfm_prj)
+where quantityordered<
+(select percentile_cont(0.25) within group (order by quantityordered)-1.5*(percentile_cont(0.75) within group (order by quantityordered)-percentile_cont(0.25) within group (order by quantityordered)) from public.sales_dataset_rfm_prj
+) or quantityordered >(select percentile_cont(0.75) within group (order by quantityordered) +1.5*(percentile_cont(0.75) within group (order by quantityordered)-percentile_cont(0.25) within group (order by quantityordered))from public.sales_dataset_rfm_prj)
 
 
 
