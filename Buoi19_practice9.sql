@@ -39,5 +39,11 @@ YEAR_ID=EXTRACT (YEAR FROM ORDERDATE)
 
 5/---Hãy tìm outlier (nếu có) cho cột QUANTITYORDERED và hãy chọn cách xử lý cho bản ghi đó (2 cách) ( Không chạy câu lệnh trước khi bài được review)---
 
-
+SELECT 
+percentile_cont(0.75) within group (order by (extract (epoch from orderdate))) as Q3,
+percentile_cont(0.25) within group (order by (extract (epoch from orderdate)))as Q1,
+percentile_cont(0.75) within group (order by (extract (epoch from orderdate)))-percentile_cont(0.25) within group (order by (extract (epoch from orderdate))) as IQR,
+percentile_cont(0.25) within group (order by (extract (epoch from orderdate)))-1.5*(percentile_cont(0.75) within group (order by (extract (epoch from orderdate)))-percentile_cont(0.25) within group (order by (extract (epoch from orderdate)))) AS MIN,
+percentile_cont(0.75) within group (order by (extract (epoch from orderdate))) +1.5*(percentile_cont(0.75) within group (order by (extract (epoch from orderdate)))-percentile_cont(0.25) within group (order by (extract (epoch from orderdate)))) AS MAX
+from public.sales_dataset_rfm_prj
 
