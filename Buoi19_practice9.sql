@@ -39,18 +39,31 @@ YEAR_ID=EXTRACT (YEAR FROM ORDERDATE)
 
 5/---Hãy tìm outlier (nếu có) cho cột QUANTITYORDERED và hãy chọn cách xử lý cho bản ghi đó (2 cách) ( Không chạy câu lệnh trước khi bài được review)---
 
-SELECT 
-percentile_cont(0.75) within group (order by (extract (epoch from orderdate))) as Q3,
-percentile_cont(0.25) within group (order by (extract (epoch from orderdate)))as Q1,
-percentile_cont(0.75) within group (order by (extract (epoch from orderdate)))-percentile_cont(0.25) within group (order by (extract (epoch from orderdate))) as IQR,
-percentile_cont(0.25) within group (order by (extract (epoch from orderdate)))-1.5*(percentile_cont(0.75) within group (order by (extract (epoch from orderdate)))-percentile_cont(0.25) within group (order by (extract (epoch from orderdate)))) AS MIN,
-percentile_cont(0.75) within group (order by (extract (epoch from orderdate))) +1.5*(percentile_cont(0.75) within group (order by (extract (epoch from orderdate)))-percentile_cont(0.25) within group (order by (extract (epoch from orderdate)))) AS MAX
-from public.sales_dataset_rfm_prj
+Cach 1: su dung percenquartile, tinh Q1,Q3,IQR, gia tri lon hon Max=Q3+1.5IQR hoac nho hon Min=Q1-1.5IQR thi loai
 
 Select * from public.sales_dataset_rfm_prj
 where quantityordered<
 (select percentile_cont(0.25) within group (order by quantityordered)-1.5*(percentile_cont(0.75) within group (order by quantityordered)-percentile_cont(0.25) within group (order by quantityordered)) from public.sales_dataset_rfm_prj
 ) or quantityordered >(select percentile_cont(0.75) within group (order by quantityordered) +1.5*(percentile_cont(0.75) within group (order by quantityordered)-percentile_cont(0.25) within group (order by quantityordered))from public.sales_dataset_rfm_prj)
 
+Cach 2: Quy doi qua z_score= (Gia tri quan sat- AVG)/STDDEV, neu ABS >2 or 3(tuy bai) thi la outlier
+Select *, (quantityordered- (select avg(quantityordered)from public.sales_dataset_rfm_prj))/(select stddev(quantityordered) from public.sales_dataset_rfm_prj) as z_score
+from public.sales_dataset_rfm_prj
+where abs((quantityordered- (select avg(quantityordered)from public.sales_dataset_rfm_prj))/(select stddev(quantityordered) from public.sales_dataset_rfm_prj))>3
 
+Xu ly ban ghi 2 cach 
+Cach 1: update outlier = gtri trung binh 
+
+UPDATE public.sales_dataset_rfm_prj
+SET quantityordered=(select avg(quantityordered)from public.sales_dataset_rfm_prj)
+where quantityordered in (Select quantityordered from public.sales_dataset_rfm_prj
+where abs((quantityordered- (select avg(quantityordered)from public.sales_dataset_rfm_prj))/(select stddev(quantityordered) from public.sales_dataset_rfm_prj))>3
+)
+
+Cach 2: xoa outlier
+Delete from public.sales_dataset_rfm_prj
+where quantityordered in (Select quantityordered from public.sales_dataset_rfm_prj
+where abs((quantityordered- (select avg(quantityordered)from public.sales_dataset_rfm_prj))/(select stddev(quantityordered) from public.sales_dataset_rfm_prj))>3
+)
+CREATE TABLE SALES_DATASET_RFM_PRJ_CLEAN  as (select * from public.sales_dataset_rfm_prj)
 
